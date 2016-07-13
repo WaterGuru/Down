@@ -275,39 +275,57 @@ static int S_render_node(cmark_node *node, cmark_event_type ev_type,
 
   case CMARK_NODE_LINK:
     if (entering) {
-      cmark_strbuf_puts(html, "<a href=\"");
-      if (!((options & CMARK_OPT_SAFE) &&
-            scan_dangerous_url(&node->as.link.url, 0))) {
-        houdini_escape_href(html, node->as.link.url.data,
-                            node->as.link.url.len);
-      }
-      if (node->as.link.title.len) {
-        cmark_strbuf_puts(html, "\" title=\"");
-        escape_html(html, node->as.link.title.data, node->as.link.title.len);
-      }
-      cmark_strbuf_puts(html, "\">");
+        if (strstr(* &node->as.link.url.data, ".mp4") != NULL) {
+            cmark_strbuf_puts(html, "<video preload=\"metadata\" width=\"100%\" controls poster=\"http://camendesign.com/code/video_for_everybody/poster.jpg\"><source src=\"");
+            if (!((options & CMARK_OPT_SAFE) && scan_dangerous_url(&node->as.link.url, 0))) {
+                houdini_escape_href(html, node->as.link.url.data,
+                                    node->as.link.url.len);
+            }
+            cmark_strbuf_puts(html, "\" type=\"video/mp4\"></video>");
+        } else {
+            cmark_strbuf_puts(html, "<a href=\"");
+            if (!((options & CMARK_OPT_SAFE) && scan_dangerous_url(&node->as.link.url, 0))) {
+                houdini_escape_href(html, node->as.link.url.data,
+                                    node->as.link.url.len);
+            }
+            if (node->as.link.title.len) {
+                cmark_strbuf_puts(html, "\" title=\"");
+                escape_html(html, node->as.link.title.data, node->as.link.title.len);
+            }
+            cmark_strbuf_puts(html, "\">");
+        }
     } else {
       cmark_strbuf_puts(html, "</a>");
     }
     break;
 
   case CMARK_NODE_IMAGE:
-    if (entering) {
-      cmark_strbuf_puts(html, "<img src=\"");
-      if (!((options & CMARK_OPT_SAFE) &&
-            scan_dangerous_url(&node->as.link.url, 0))) {
-        houdini_escape_href(html, node->as.link.url.data,
-                            node->as.link.url.len);
-      }
-      cmark_strbuf_puts(html, "\" alt=\"");
-      state->plain = node;
-    } else {
-      if (node->as.link.title.len) {
-        cmark_strbuf_puts(html, "\" title=\"");
-        escape_html(html, node->as.link.title.data, node->as.link.title.len);
-      }
+    /*if (strstr(* &node->as.link.url.data, ".mp4") != NULL && entering) {
+        cmark_strbuf_puts(html, "<video preload=\"metadata\" width=\"100%\" controls><source src=\"");
+        if (!((options & CMARK_OPT_SAFE) && scan_dangerous_url(&node->as.link.url, 0))) {
+            houdini_escape_href(html, node->as.link.url.data,
+                                node->as.link.url.len);
+        }
+        cmark_strbuf_puts(html, "\" type=\"video/mp4\"></video>");
+        state->plain = node;
+    } else {*/
+        if (entering) {
+            cmark_strbuf_puts(html, "<img src=\"");
+            if (!((options & CMARK_OPT_SAFE) &&
+                scan_dangerous_url(&node->as.link.url, 0))) {
+                houdini_escape_href(html, node->as.link.url.data,
+                                    node->as.link.url.len);
+            }
+            cmark_strbuf_puts(html, "\" alt=\"");
+            state->plain = node;
+        } else {
+            if (node->as.link.title.len) {
+                cmark_strbuf_puts(html, "\" title=\"");
+                escape_html(html, node->as.link.title.data, node->as.link.title.len);
+            }
 
-      cmark_strbuf_puts(html, "\" />");
+            cmark_strbuf_puts(html, "\" />");
+        //}
     }
     break;
 

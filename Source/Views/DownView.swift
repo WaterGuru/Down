@@ -23,7 +23,9 @@ public class DownView: WKWebView {
      */
     @warn_unused_result
     public init(frame: CGRect, markdownString: String, openLinksInBrowser: Bool = true) throws {
-        super.init(frame: frame, configuration: WKWebViewConfiguration())
+        let configuration = WKWebViewConfiguration()
+        configuration.allowsInlineMediaPlayback = true
+        super.init(frame: frame, configuration: configuration)
 
         if openLinksInBrowser { navigationDelegate = self }
         try loadHTMLView(markdownString)
@@ -45,11 +47,14 @@ public class DownView: WKWebView {
 // MARK: - Private API
 
 private extension DownView {
-
     func loadHTMLView(markdownString: String) throws {
         let htmlString = try markdownString.toHTML()
         let pageHTMLString = try htmlFromTemplate(htmlString)
         loadHTMLString(pageHTMLString, baseURL: baseURL)
+        
+//        let url = NSURL(string: "http://demo.wptouch.com")
+//        let request = NSURLRequest(URL: url!)
+//        loadRequest(request)
     }
 
     func htmlFromTemplate(htmlString: String) throws -> String {
@@ -67,9 +72,9 @@ extension DownView: WKNavigationDelegate {
         guard let url = navigationAction.request.URL else { return }
 
         switch navigationAction.navigationType {
-        case .LinkActivated:
+        /*case .LinkActivated:
             decisionHandler(.Cancel)
-            UIApplication.sharedApplication().openURL(url)
+            UIApplication.sharedApplication().openURL(url)*/
         default:
             decisionHandler(.Allow)
         }
