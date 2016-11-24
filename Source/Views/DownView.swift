@@ -30,6 +30,10 @@ public class DownView: WKWebView {
         if openLinksInBrowser { navigationDelegate = self }
         try loadHTMLView(markdownString)
     }
+    
+    public required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Private Properties
 
